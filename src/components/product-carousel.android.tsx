@@ -25,6 +25,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
         {products.map(product => (
           <RNHostView key={product.id} matchContents modifiers={[size(CARD_WIDTH, CARD_HEIGHT)]}>
             <ProductCard
+              id={product.id}
               title={product.title}
               description={product.description}
               image={product.image}

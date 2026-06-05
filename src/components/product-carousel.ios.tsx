@@ -23,6 +23,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
             <RNHostView key={product.id} matchContents>
               <View style={styles.cardWrapper}>
                 <ProductCard
+                  id={product.id}
                   title={product.title}
                   description={product.description}
                   image={product.image}

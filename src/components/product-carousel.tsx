@@ -22,6 +22,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
       {products.map(product => (
         <ProductCard
           key={product.id}
+          id={product.id}
           title={product.title}
           description={product.description}
           image={product.image}

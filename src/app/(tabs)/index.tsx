@@ -1,3 +1,5 @@
+import { useObserve } from 'expo-observe';
+import { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,8 +11,13 @@ import { useTheme } from '@/hooks/use-theme';
 import { productsData } from '@/data/products';
 
 export default function HomeScreen() {
+  const { markInteractive } = useObserve();
   const safeAreaInsets = useSafeAreaInsets();
   const theme = useTheme();
+
+  useEffect(() => {
+    markInteractive();
+  }, [markInteractive]);
 
   const insets = {
     ...safeAreaInsets,
