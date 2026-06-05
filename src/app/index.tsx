@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import productsData from '@/data/products.json';
+import { productsData } from '@/data/products';
 
 export default function HomeScreen() {
   const safeAreaInsets = useSafeAreaInsets();
