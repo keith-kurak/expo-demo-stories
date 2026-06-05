@@ -1,98 +1,81 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
+import { ProductCarousel } from '@/components/product-carousel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { useTheme } from '@/hooks/use-theme';
+import productsData from '@/data/products.json';
 
 export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+  const safeAreaInsets = useSafeAreaInsets();
+  const theme = useTheme();
 
-        <ThemedText type="code" style={styles.code}>
-          get started
+  const insets = {
+    ...safeAreaInsets,
+    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
+  };
+
+  const contentPlatformStyle = Platform.select({
+    android: {
+      paddingTop: insets.top + Spacing.four,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+      paddingBottom: insets.bottom,
+    },
+    web: {
+      paddingTop: Spacing.six,
+      paddingBottom: Spacing.four,
+    },
+    default: {},
+  });
+
+  return (
+    <ScrollView
+      style={[styles.scrollView, { backgroundColor: theme.background }]}
+      contentInset={insets}
+      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}>
+      <ThemedView style={styles.container}>
+        <ThemedText type="subtitle" style={styles.heading}>
+          Discover
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        {productsData.categories.map(category => (
+          <ThemedView key={category.title} style={styles.section}>
+            <ThemedText type="default" style={styles.sectionTitle}>
+              {category.title}
+            </ThemedText>
+            <ProductCarousel products={category.products} />
+          </ThemedView>
+        ))}
+      </ThemedView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  contentContainer: {
     flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+  },
+  container: {
+    maxWidth: MaxContentWidth,
+    flexGrow: 1,
     paddingHorizontal: Spacing.four,
     gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  },
+  heading: {
+    marginBottom: Spacing.two,
+  },
+  section: {
+    gap: Spacing.two,
+  },
+  sectionTitle: {
+    fontWeight: '700',
   },
 });
