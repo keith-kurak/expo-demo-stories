@@ -6,6 +6,7 @@ const brands = {
     bundleIdentifier: "com.keith-kurak.food-for-me",
     package: "com.keithkurak.foodforme",
     assets: "./assets/brands/food-for-me",
+    easProjectId: "2f5bdb5c-168e-4320-b66d-f085e55ac69e",
   },
   "food-for-my-pet": {
     name: "Food for My Pet",
@@ -14,6 +15,7 @@ const brands = {
     bundleIdentifier: "com.keith-kurak.food-for-my-pet",
     package: "com.keithkurak.foodformypet",
     assets: "./assets/brands/food-for-my-pet",
+    easProjectId: "7b29b5e4-1ac9-41b8-b9d9-09e59f05a146",
   },
 };
 
@@ -63,6 +65,15 @@ export default {
     experiments: {
       typedRoutes: true,
       reactCompiler: true,
+    },
+    extra: {
+      eas: {
+        projectId: brandConfig.easProjectId,
+      },
+    },
+    updates: {
+      url: `https://u.expo.dev/${brandConfig.easProjectId}`,
+      runtimeVersion: { policy: "appVersion" },
     },
   },
 };

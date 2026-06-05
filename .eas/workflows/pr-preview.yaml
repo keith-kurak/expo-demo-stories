@@ -1,0 +1,24 @@
+name: Publish PR preview update
+
+defaults:
+  tools:
+    bun: 1.3.10
+
+on:
+  pull_request:
+    branches: ["*"]
+
+concurrency:
+  cancel_in_progress: true
+  group: ${{ workflow.filename }}-${{ github.ref }}
+
+jobs:
+  publish_preview_update:
+    name: Publish update to PR branch
+    type: update
+    params:
+      branch: ${{ github.ref_name || 'test' }}
+  comment_on_pr:
+    name: Post Results to PR
+    after: [publish_preview_update]
+    type: github-comment
