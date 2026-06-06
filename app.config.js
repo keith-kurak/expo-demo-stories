@@ -19,8 +19,17 @@ const brands = {
   },
 };
 
+const fs = require("fs");
+const path = require("path");
+
 const brand = process.env.EXPO_PUBLIC_BRAND || "food-for-me";
 const brandConfig = brands[brand] ?? brands["food-for-me"];
+
+let criticalIndex = 0;
+try {
+  const raw = fs.readFileSync(path.join(__dirname, ".criticalIndex"), "utf-8");
+  criticalIndex = parseInt(raw, 10) || 0;
+} catch {}
 
 export default {
   expo: {
@@ -67,6 +76,7 @@ export default {
       reactCompiler: true,
     },
     extra: {
+      criticalIndex,
       eas: {
         projectId: brandConfig.easProjectId,
       },
@@ -74,6 +84,7 @@ export default {
     updates: {
       url: `https://u.expo.dev/${brandConfig.easProjectId}`,
       runtimeVersion: { policy: "appVersion" },
+      checkAutomatically: "NEVER",
     },
   },
 };

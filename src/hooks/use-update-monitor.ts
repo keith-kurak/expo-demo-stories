@@ -1,0 +1,125 @@
+import Constants from 'expo-constants';
+import {
+  useUpdates,
+  checkForUpdateAsync,
+  fetchUpdateAsync,
+  reloadAsync,
+} from 'expo-updates';
+import type { ExpoUpdatesManifest } from 'expo-manifests';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { AppState } from 'react-native';
+
+function getCriticalIndex(manifest: any): number {
+  // For downloaded updates: manifest.extra.expoClient.extra.criticalIndex
+  const fromManifest =
+    (manifest as ExpoUpdatesManifest)?.extra?.expoClient?.extra?.criticalIndex;
+  if (typeof fromManifest === 'number') return fromManifest;
+
+  // For embedded launches: Constants.expoConfig.extra.criticalIndex
+  const fromConstants = Constants.expoConfig?.extra?.criticalIndex;
+  if (typeof fromConstants === 'number') return fromConstants;
+
+  return 0;
+}
+
+export type UpdateMonitorState = {
+  /** A non-critical update has been downloaded and is waiting for user confirmation to apply */
+  pendingNonCritical: boolean;
+  /** A critical update is being downloaded */
+  downloadingCritical: boolean;
+  /** Dismiss the non-critical update prompt */
+  dismissUpdate: () => void;
+  /** Apply the pending non-critical update */
+  applyUpdate: () => void;
+};
+
+export function useUpdateMonitor(): UpdateMonitorState {
+  const updatesSystem = useUpdates();
+  const {
+    currentlyRunning,
+    isUpdateAvailable,
+    isUpdatePending,
+    availableUpdate,
+  } = updatesSystem;
+
+  const [pendingNonCritical, setPendingNonCritical] = useState(false);
+  const [downloadingCritical, setDownloadingCritical] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const isHandling = useRef(false);
+
+  const isCritical = (() => {
+    if (!availableUpdate?.manifest) return false;
+    const currentIndex = getCriticalIndex(currentlyRunning.manifest);
+    const availableIndex = getCriticalIndex(availableUpdate.manifest);
+    return availableIndex > currentIndex;
+  })();
+
+  // Check for updates on foreground
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        checkForUpdateAsync().catch(() => {});
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
+  // Also check once on mount
+  useEffect(() => {
+    checkForUpdateAsync().catch(() => {});
+  }, []);
+
+  // Handle update available
+  useEffect(() => {
+    if (!isUpdateAvailable || isHandling.current) return;
+
+    if (isCritical) {
+      isHandling.current = true;
+      setDownloadingCritical(true);
+      fetchUpdateAsync().catch(() => {
+        setDownloadingCritical(false);
+        isHandling.current = false;
+      });
+    }
+  }, [isUpdateAvailable, isCritical]);
+
+  // Handle critical update downloaded — reload immediately
+  useEffect(() => {
+    if (isUpdatePending && isCritical) {
+      reloadAsync().catch(() => {});
+    }
+  }, [isUpdatePending, isCritical]);
+
+  // Handle non-critical update available — download in background, then prompt
+  useEffect(() => {
+    if (!isUpdateAvailable || isCritical || isHandling.current) return;
+    isHandling.current = true;
+    fetchUpdateAsync().catch(() => {
+      isHandling.current = false;
+    });
+  }, [isUpdateAvailable, isCritical]);
+
+  // Show prompt when non-critical update is downloaded
+  useEffect(() => {
+    if (isUpdatePending && !isCritical && !dismissed) {
+      setPendingNonCritical(true);
+    }
+  }, [isUpdatePending, isCritical, dismissed]);
+
+  const dismissUpdate = useCallback(() => {
+    setPendingNonCritical(false);
+    setDismissed(true);
+  }, []);
+
+  const applyUpdate = useCallback(() => {
+    setPendingNonCritical(false);
+    reloadAsync().catch(() => {});
+  }, []);
+
+  return {
+    pendingNonCritical,
+    downloadingCritical,
+    dismissUpdate,
+    applyUpdate,
+  };
+}
