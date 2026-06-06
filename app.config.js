@@ -19,72 +19,61 @@ const brands = {
   },
 };
 
-const fs = require("fs");
-const path = require("path");
-
 const brand = process.env.EXPO_PUBLIC_BRAND || "food-for-me";
 const brandConfig = brands[brand] ?? brands["food-for-me"];
 
-let criticalIndex = 0;
-try {
-  const raw = fs.readFileSync(path.join(__dirname, ".criticalIndex"), "utf-8");
-  criticalIndex = parseInt(raw, 10) || 0;
-} catch {}
+/** Derive runtime version from major.minor (patch is for OTA updates). */
+function runtimeVersion(version) {
+  const [major, minor] = version.split(".");
+  return `${major}.${minor}.0`;
+}
 
-export default {
-  expo: {
-    name: brandConfig.name,
-    slug: brandConfig.slug,
-    scheme: brandConfig.scheme,
-    version: "1.0.0",
-    orientation: "portrait",
-    icon: `${brandConfig.assets}/icon.png`,
-    userInterfaceStyle: "automatic",
-    ios: {
-      icon: `${brandConfig.assets}/expo.icon`,
-      bundleIdentifier: brandConfig.bundleIdentifier,
+export default ({ config }) => ({
+  ...config,
+  name: brandConfig.name,
+  slug: brandConfig.slug,
+  scheme: brandConfig.scheme,
+  icon: `${brandConfig.assets}/icon.png`,
+  ios: {
+    icon: `${brandConfig.assets}/expo.icon`,
+    bundleIdentifier: brandConfig.bundleIdentifier,
+  },
+  android: {
+    package: brandConfig.package,
+    adaptiveIcon: {
+      backgroundColor: "#E6F4FE",
+      foregroundImage: `${brandConfig.assets}/android-icon-foreground.png`,
+      backgroundImage: `${brandConfig.assets}/android-icon-background.png`,
+      monochromeImage: `${brandConfig.assets}/android-icon-monochrome.png`,
     },
-    android: {
-      package: brandConfig.package,
-      adaptiveIcon: {
-        backgroundColor: "#E6F4FE",
-        foregroundImage: `${brandConfig.assets}/android-icon-foreground.png`,
-        backgroundImage: `${brandConfig.assets}/android-icon-background.png`,
-        monochromeImage: `${brandConfig.assets}/android-icon-monochrome.png`,
-      },
-      predictiveBackGestureEnabled: false,
-    },
-    web: {
-      output: "static",
-      favicon: `${brandConfig.assets}/favicon.png`,
-    },
-    plugins: [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          backgroundColor: "#208AEF",
-          android: {
-            image: `${brandConfig.assets}/splash-icon.png`,
-            imageWidth: 76,
-          },
+    predictiveBackGestureEnabled: false,
+  },
+  web: {
+    ...config.web,
+    favicon: `${brandConfig.assets}/favicon.png`,
+  },
+  plugins: [
+    "expo-router",
+    [
+      "expo-splash-screen",
+      {
+        backgroundColor: "#208AEF",
+        android: {
+          image: `${brandConfig.assets}/splash-icon.png`,
+          imageWidth: 76,
         },
-      ],
-    ],
-    experiments: {
-      typedRoutes: true,
-      reactCompiler: true,
-    },
-    extra: {
-      criticalIndex,
-      eas: {
-        projectId: brandConfig.easProjectId,
       },
-    },
-    updates: {
-      url: `https://u.expo.dev/${brandConfig.easProjectId}`,
-      runtimeVersion: { policy: "appVersion" },
-      checkAutomatically: "NEVER",
+    ],
+  ],
+  extra: {
+    ...config.extra,
+    eas: {
+      projectId: brandConfig.easProjectId,
     },
   },
-};
+  updates: {
+    ...config.updates,
+    url: `https://u.expo.dev/${brandConfig.easProjectId}`,
+    runtimeVersion: runtimeVersion(config.version),
+  },
+});

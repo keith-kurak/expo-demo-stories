@@ -5,6 +5,7 @@ const fs = require("fs/promises");
 const { execSync } = require("child_process");
 
 const projectRoot = path.resolve(__dirname, "..");
+const appJsonPath = path.join(projectRoot, "app.json");
 
 const usage = () => {
   console.log("Usage: node scripts/push-update.js --message <msg> [--critical] [--channel <ch>] [--platform <ios|android>]");
@@ -15,15 +16,13 @@ const usage = () => {
   console.log("  --platform, -p  (optional) ios or android (default: all)");
 };
 
-async function incrementCriticalIndex(critical) {
-  const indexPath = path.join(projectRoot, ".criticalIndex");
-  let current = 0;
-  try {
-    const text = await fs.readFile(indexPath, "utf-8");
-    current = parseInt(text, 10) || 0;
-  } catch {}
+async function updateCriticalIndex(critical) {
+  const raw = await fs.readFile(appJsonPath, "utf-8");
+  const appJson = JSON.parse(raw);
+  const current = appJson.expo.extra?.criticalIndex ?? 0;
   const updated = critical ? current + 1 : current;
-  await fs.writeFile(indexPath, `${updated}`, "utf-8");
+  appJson.expo.extra = { ...appJson.expo.extra, criticalIndex: updated };
+  await fs.writeFile(appJsonPath, JSON.stringify(appJson, null, 2) + "\n", "utf-8");
   return updated;
 }
 
@@ -65,12 +64,9 @@ async function main() {
   console.log(`channel: ${channel}`);
   console.log(`platform: ${platform ?? "all"}`);
 
-  // Increment .criticalIndex if --critical flag is set.
-  // app.config.js reads this file dynamically, so no config file edits needed.
-  const criticalIndex = await incrementCriticalIndex(critical);
+  const criticalIndex = await updateCriticalIndex(critical);
   console.log(`criticalIndex: ${criticalIndex}`);
 
-  // Build the eas update command
   const easArgs = [
     "update",
     `--message=${message}`,
