@@ -9,21 +9,28 @@ jobs:
   build_android:
     name: Build Android
     type: build
+    env:
+      APP_VERSION: ${{ substring(github.ref_name, 8) }}
     params:
       platform: android
       profile: production
+
   build_ios:
     name: Build iOS
     type: build
+    env:
+      APP_VERSION: ${{ substring(github.ref_name, 8) }}
     params:
       platform: ios
       profile: production
+
   submit_android:
     name: Submit Android
     needs: [build_android]
     type: submit
     params:
       build_id: ${{ needs.build_android.outputs.build_id }}
+
   submit_ios:
     name: Submit iOS
     needs: [build_ios]

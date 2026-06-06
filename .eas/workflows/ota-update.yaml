@@ -10,6 +10,8 @@ jobs:
   fingerprint:
     name: Fingerprint
     type: fingerprint
+    env:
+      APP_VERSION: ${{ substring(github.ref_name, 8) }}
 
   get_android_build:
     name: Check for existing Android build
@@ -32,5 +34,7 @@ jobs:
     needs: [get_android_build, get_ios_build]
     if: ${{ needs.get_android_build.outputs.build_id && needs.get_ios_build.outputs.build_id }}
     type: update
+    env:
+      APP_VERSION: ${{ substring(github.ref_name, 8) }}
     params:
       branch: production

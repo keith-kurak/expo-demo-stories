@@ -28,8 +28,11 @@ function runtimeVersion(version) {
   return `${major}.${minor}.0`;
 }
 
+const version = process.env.APP_VERSION || undefined;
+
 export default ({ config }) => ({
   ...config,
+  ...(version && { version }),
   name: brandConfig.name,
   slug: brandConfig.slug,
   scheme: brandConfig.scheme,
@@ -74,6 +77,6 @@ export default ({ config }) => ({
   updates: {
     ...config.updates,
     url: `https://u.expo.dev/${brandConfig.easProjectId}`,
-    runtimeVersion: runtimeVersion(config.version),
+    runtimeVersion: runtimeVersion(version || config.version),
   },
 });
