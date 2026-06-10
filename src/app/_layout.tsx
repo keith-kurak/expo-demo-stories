@@ -6,14 +6,21 @@ import { CriticalUpdateOverlay } from "@/components/critical-update-overlay";
 import { UpdateAlert } from "@/components/update-alert";
 import { useUpdateMonitor } from "@/hooks/use-update-monitor";
 
+// just a change to trigger a diff
+
 Observe.configure({
   integrations: { "expo-router": true },
 });
 
 function RootLayout() {
   const colorScheme = useColorScheme();
-  const { pendingNonCritical, downloadingCritical, criticalReloadPending, dismissUpdate, applyUpdate } =
-    useUpdateMonitor();
+  const {
+    pendingNonCritical,
+    downloadingCritical,
+    criticalReloadPending,
+    dismissUpdate,
+    applyUpdate,
+  } = useUpdateMonitor();
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -26,7 +33,10 @@ function RootLayout() {
         onDismiss={dismissUpdate}
         onUpdate={applyUpdate}
       />
-      <CriticalUpdateOverlay visible={downloadingCritical} reloadPending={criticalReloadPending} />
+      <CriticalUpdateOverlay
+        visible={downloadingCritical}
+        reloadPending={criticalReloadPending}
+      />
     </ThemeProvider>
   );
 }
