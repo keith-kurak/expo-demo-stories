@@ -32,20 +32,23 @@ const version = process.env.APP_VERSION || undefined;
 const criticalIndex = process.env.CRITICAL_INDEX
   ? parseInt(process.env.CRITICAL_INDEX, 10)
   : undefined;
+const isDev = process.env.IS_DEV === "true";
 
 export default ({ config }) => ({
   ...config,
   ...(version && { version }),
-  name: brandConfig.name,
+  name: isDev ? `Dev: ${brandConfig.name}` : brandConfig.name,
   slug: brandConfig.slug,
-  scheme: brandConfig.scheme,
+  scheme: isDev ? `${brandConfig.scheme}-dev` : brandConfig.scheme,
   icon: `${brandConfig.assets}/icon.png`,
   ios: {
     icon: `${brandConfig.assets}/expo.icon`,
-    bundleIdentifier: brandConfig.bundleIdentifier,
+    bundleIdentifier: isDev
+      ? `${brandConfig.bundleIdentifier}.dev`
+      : brandConfig.bundleIdentifier,
   },
   android: {
-    package: brandConfig.package,
+    package: isDev ? `${brandConfig.package}.dev` : brandConfig.package,
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
       foregroundImage: `${brandConfig.assets}/android-icon-foreground.png`,
