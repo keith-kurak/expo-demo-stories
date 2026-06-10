@@ -37,8 +37,9 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start-food-for-me": "EXPO_PUBLIC_BRAND=food-for-me expo start",
-    "start-food-for-my-pet": "EXPO_PUBLIC_BRAND=food-for-my-pet expo start",
+    "start": "IS_DEV=true expo start",
+    "start-food-for-me": "IS_DEV=true EXPO_PUBLIC_BRAND=food-for-me expo start",
+    "start-food-for-my-pet": "IS_DEV=true EXPO_PUBLIC_BRAND=food-for-my-pet expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios-food-for-me": "EXPO_PUBLIC_BRAND=food-for-me expo run:ios",
