@@ -12,7 +12,7 @@ Observe.configure({
 
 function RootLayout() {
   const colorScheme = useColorScheme();
-  const { pendingNonCritical, downloadingCritical, dismissUpdate, applyUpdate } =
+  const { pendingNonCritical, downloadingCritical, criticalReloadPending, dismissUpdate, applyUpdate } =
     useUpdateMonitor();
 
   return (
@@ -26,7 +26,7 @@ function RootLayout() {
         onDismiss={dismissUpdate}
         onUpdate={applyUpdate}
       />
-      <CriticalUpdateOverlay visible={downloadingCritical} />
+      <CriticalUpdateOverlay visible={downloadingCritical} reloadPending={criticalReloadPending} />
     </ThemeProvider>
   );
 }

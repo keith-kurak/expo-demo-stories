@@ -8,8 +8,9 @@ const projectRoot = path.resolve(__dirname, "..");
 const appJsonPath = path.join(projectRoot, "app.json");
 
 const usage = () => {
-  console.log("Usage: node scripts/push-update.js --message <msg> [--critical] [--channel <ch>] [--platform <ios|android>]");
+  console.log("Usage: node scripts/push-update.js --version <x.y.z> --message <msg> [--critical] [--channel <ch>] [--platform <ios|android>]");
   console.log();
+  console.log("  --version, -v   (required) App version (e.g. 1.0.1). Patch must not be 0.");
   console.log("  --message, -m   (required) Update message");
   console.log("  --critical, -c  (optional) Mark this as a critical update");
   console.log("  --channel, -ch  (optional) Channel name (default: preview)");
@@ -26,15 +27,34 @@ async function updateCriticalIndex(critical) {
   return updated;
 }
 
+function parseAndValidateVersion(versionStr) {
+  const parts = versionStr.split(".");
+  if (parts.length !== 3 || parts.some((p) => !/^\d+$/.test(p))) {
+    console.error(`Error: Invalid version format "${versionStr}". Expected x.y.z`);
+    process.exit(1);
+  }
+  const patch = parseInt(parts[2], 10);
+  if (patch === 0) {
+    console.error(`Error: Patch version must not be 0. Got "${versionStr}". OTA updates require a non-zero patch (e.g. 1.0.1).`);
+    process.exit(1);
+  }
+  return versionStr;
+}
+
 async function main() {
   const args = process.argv.slice(2);
   let message = "";
+  let version = "";
   let critical = false;
   let channel = "preview";
   let platform = null;
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
+      case "--version":
+      case "-v":
+        version = args[++i];
+        break;
       case "--message":
       case "-m":
         message = args[++i];
@@ -54,11 +74,14 @@ async function main() {
     }
   }
 
-  if (!message) {
+  if (!message || !version) {
     usage();
     process.exit(1);
   }
 
+  const validatedVersion = parseAndValidateVersion(version);
+
+  console.log(`version: ${validatedVersion}`);
   console.log(`message: ${message}`);
   console.log(`critical: ${critical}`);
   console.log(`channel: ${channel}`);
@@ -76,11 +99,12 @@ async function main() {
     easArgs.push(`--platform=${platform}`);
   }
 
-  console.log(`\nRunning: eas ${easArgs.join(" ")}\n`);
+  console.log(`\nRunning: APP_VERSION=${validatedVersion} eas ${easArgs.join(" ")}\n`);
 
   execSync(`eas ${easArgs.join(" ")}`, {
     cwd: projectRoot,
     stdio: "inherit",
+    env: { ...process.env, APP_VERSION: validatedVersion },
   });
 
   console.log("\nDone.");

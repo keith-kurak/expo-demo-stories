@@ -29,6 +29,9 @@ function runtimeVersion(version) {
 }
 
 const version = process.env.APP_VERSION || undefined;
+const criticalIndex = process.env.CRITICAL_INDEX
+  ? parseInt(process.env.CRITICAL_INDEX, 10)
+  : undefined;
 
 export default ({ config }) => ({
   ...config,
@@ -70,13 +73,14 @@ export default ({ config }) => ({
   ],
   extra: {
     ...config.extra,
+    ...(criticalIndex != null && { criticalIndex }),
     eas: {
       projectId: brandConfig.easProjectId,
     },
   },
+  runtimeVersion: runtimeVersion(version || config.version),
   updates: {
     ...config.updates,
     url: `https://u.expo.dev/${brandConfig.easProjectId}`,
-    runtimeVersion: runtimeVersion(version || config.version),
   },
 });

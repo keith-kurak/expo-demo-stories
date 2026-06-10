@@ -27,10 +27,24 @@ export type UpdateMonitorState = {
   pendingNonCritical: boolean;
   /** A critical update is being downloaded */
   downloadingCritical: boolean;
+  /** A critical update is pending and about to reload */
+  criticalReloadPending: boolean;
   /** Dismiss the non-critical update prompt */
   dismissUpdate: () => void;
   /** Apply the pending non-critical update */
   applyUpdate: () => void;
+  /** Manually check for updates */
+  checkForUpdate: () => void;
+  /** Whether a check is currently in progress */
+  isChecking: boolean;
+  /** The current update ID */
+  currentUpdateId: string | undefined;
+  /** Whether the app is running an embedded bundle */
+  isEmbeddedLaunch: boolean;
+  /** The runtime version */
+  runtimeVersion: string | undefined;
+  /** The manifest version (from the update manifest) */
+  manifestVersion: string | undefined;
 };
 
 export function useUpdateMonitor(): UpdateMonitorState {
@@ -44,7 +58,9 @@ export function useUpdateMonitor(): UpdateMonitorState {
 
   const [pendingNonCritical, setPendingNonCritical] = useState(false);
   const [downloadingCritical, setDownloadingCritical] = useState(false);
+  const [criticalReloadPending, setCriticalReloadPending] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const isHandling = useRef(false);
 
   const isCritical = (() => {
@@ -83,10 +99,10 @@ export function useUpdateMonitor(): UpdateMonitorState {
     }
   }, [isUpdateAvailable, isCritical]);
 
-  // Handle critical update downloaded — reload immediately
+  // Handle critical update downloaded — signal countdown before reload
   useEffect(() => {
     if (isUpdatePending && isCritical) {
-      reloadAsync().catch(() => {});
+      setCriticalReloadPending(true);
     }
   }, [isUpdatePending, isCritical]);
 
@@ -116,10 +132,29 @@ export function useUpdateMonitor(): UpdateMonitorState {
     reloadAsync().catch(() => {});
   }, []);
 
+  const checkForUpdate = useCallback(() => {
+    setIsChecking(true);
+    checkForUpdateAsync()
+      .catch(() => {})
+      .finally(() => setIsChecking(false));
+  }, []);
+
+  const manifest = currentlyRunning.manifest as ExpoUpdatesManifest | undefined;
+  const manifestVersion = manifest?.extra?.expoClient?.version;
+  const runtimeVersion =
+    currentlyRunning.runtimeVersion || Constants.expoConfig?.runtimeVersion;
+
   return {
     pendingNonCritical,
     downloadingCritical,
+    criticalReloadPending,
     dismissUpdate,
     applyUpdate,
+    checkForUpdate,
+    isChecking,
+    currentUpdateId: currentlyRunning.updateId,
+    isEmbeddedLaunch: currentlyRunning.isEmbeddedLaunch,
+    runtimeVersion: typeof runtimeVersion === 'string' ? runtimeVersion : undefined,
+    manifestVersion,
   };
 }

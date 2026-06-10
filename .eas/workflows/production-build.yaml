@@ -2,7 +2,7 @@ name: Production build and submit
 
 on:
   push:
-    branches:
+    tags:
       - release-*.*.0
 
 jobs:
@@ -23,6 +23,15 @@ jobs:
     params:
       platform: ios
       profile: production
+
+  build_ios_simulator:
+    name: Build iOS
+    type: build
+    env:
+      APP_VERSION: ${{ substring(github.ref_name, 8) }}
+    params:
+      platform: ios
+      profile: production-simulator
 
   submit_android:
     name: Submit Android
