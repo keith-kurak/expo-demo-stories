@@ -45,6 +45,8 @@ export type UpdateMonitorState = {
   runtimeVersion: string | undefined;
   /** The manifest version (from the update manifest) */
   manifestVersion: string | undefined;
+  /** The current critical index */
+  criticalIndex: number;
 };
 
 export function useUpdateMonitor(): UpdateMonitorState {
@@ -156,5 +158,6 @@ export function useUpdateMonitor(): UpdateMonitorState {
     isEmbeddedLaunch: currentlyRunning.isEmbeddedLaunch,
     runtimeVersion: typeof runtimeVersion === 'string' ? runtimeVersion : undefined,
     manifestVersion,
+    criticalIndex: getCriticalIndex(currentlyRunning.manifest),
   };
 }

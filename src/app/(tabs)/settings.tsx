@@ -28,6 +28,7 @@ export default function SettingsScreen() {
     manifestVersion,
     pendingNonCritical,
     downloadingCritical,
+    criticalIndex,
   } = useUpdateMonitor();
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function SettingsScreen() {
             <InfoRow label="Native build" value={buildVersion ?? undefined} />
             <InfoRow label="Manifest version" value={manifestVersion} />
             <InfoRow label="Runtime version" value={runtimeVersion} />
+            <InfoRow label="Critical index" value={String(criticalIndex)} />
           </View>
 
           <View style={styles.section}>
