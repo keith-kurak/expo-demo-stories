@@ -64,6 +64,10 @@ If multiple brands are separate projects in a monorepo, or even just have diffre
 
 For a huge number of apps, raw events could be ingested directly by overriding the endpoint (OTEL format), still get Observe dashboard features if you forward them along.
 
+#### Example
+
+Run `./scripts/collect-metrics.sh` to output a csv of consolidated metrics for two apps.
+
 ## 3. Development builds
 
 Development builds can allow developer to minimize the number of builds they need to run in order to do local development and allow testers to install one build to test many different changes. This is because development builds can run JavaScript code from a local bundler URL or an OTA update URL.

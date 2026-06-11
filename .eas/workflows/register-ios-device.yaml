@@ -8,7 +8,7 @@ jobs:
   register_device:
     type: apple-device-registration-request
     params:
-      apple_team_identifier: ABCDE12345
+      apple_team_identifier: CB8EP95D83
   build_ios:
     needs: [register_device]
     type: build
