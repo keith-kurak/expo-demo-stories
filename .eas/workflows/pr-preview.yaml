@@ -90,4 +90,4 @@ jobs:
 
         **To test:**
         1. Install the development build on your device or simulator using the links above
-        2. Open the app and it will load the update from branch `pr-${{ github.event.pull_request.number }}`
+        2. Open the app and scan the QR code for the update to load code from branch `pr-${{ github.event.pull_request.number }}`
