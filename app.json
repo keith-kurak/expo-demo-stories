@@ -25,7 +25,7 @@
       "fallbackToCacheTimeout": 0
     },
     "extra": {
-      "criticalIndex": 0
+      "criticalIndex": 1
     }
   }
 }
