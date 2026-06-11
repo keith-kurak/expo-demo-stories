@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { Observe } from 'expo-observe';
 import { Link } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
@@ -30,19 +30,21 @@ export function ProductCard({ id, title, description, image }: ProductCardProps)
           attributes: { productId: id, title },
         });
       }}
-      asChild={false}
+      asChild
       style={styles.link}>
-      <ThemedView type="backgroundElement" style={styles.card}>
-        <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
-        <View style={styles.textContainer}>
-          <ThemedText type="small" numberOfLines={1}>
-            {title}
-          </ThemedText>
-          <ThemedText type="small" themeColor="textSecondary" numberOfLines={2} style={styles.desc}>
-            {description}
-          </ThemedText>
-        </View>
-      </ThemedView>
+      <Pressable>
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
+          <View style={styles.textContainer}>
+            <ThemedText type="small" numberOfLines={1}>
+              {title}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" numberOfLines={2} style={styles.desc}>
+              {description}
+            </ThemedText>
+          </View>
+        </ThemedView>
+      </Pressable>
     </Link>
   );
 }

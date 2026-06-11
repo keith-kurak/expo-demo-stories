@@ -26,6 +26,11 @@
       "autoIncrement": true,
       "channel": "production"
     },
+    "production-apk": {
+      "android": {
+        "distribution": "internal"
+      }
+    },
     "production-simulator": {
       "extends": "production",
       "ios": {
