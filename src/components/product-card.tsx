@@ -30,9 +30,8 @@ export function ProductCard({ id, title, description, image }: ProductCardProps)
           attributes: { productId: id, title },
         });
       }}
-      asChild
-      style={styles.link}>
-      <Pressable>
+      asChild>
+      <Pressable style={styles.link}>
         <ThemedView type="backgroundElement" style={styles.card}>
           <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
           <View style={styles.textContainer}>
