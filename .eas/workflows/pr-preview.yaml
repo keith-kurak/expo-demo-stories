@@ -92,4 +92,4 @@ jobs:
         1. Install the development build on your device or simulator using the links above
         2. Open the app and scan the QR code for the update to load code from branch `pr-${{ github.event.pull_request.number }}`
 
-        **Note: If you have not yet registered your iOS device for development builds, register at https://expo.dev/register-device/e94294fc-ba8d-4d13-ba71-a9b4f3317b97 and then tag this PR with "add-ios-device" to trigger a new build with your device included.**
+        **Note: If you have not yet registered your iOS device for development builds, tag this PR with "add-ios-device" and go to the iOS device registration workflow page.**
