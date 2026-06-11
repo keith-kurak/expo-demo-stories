@@ -51,10 +51,28 @@ jobs:
       runtime_version: ${{ needs.parse_tag.outputs.runtime_version }}
       profile: production-simulator # for demonstration purposes only
 
+  verify_builds:
+    name: Verify builds exist
+    needs: [get_android_build, get_ios_build, parse_tag]
+    steps:
+      - name: Check Android build
+        run: |
+          if [ -z "${{ needs.get_android_build.outputs.build_id }}" ]; then
+            echo "No Android build found matching fingerprint and runtime version ${{ needs.parse_tag.outputs.runtime_version }}"
+            exit 1
+          fi
+          echo "Android build found: ${{ needs.get_android_build.outputs.build_id }}"
+      - name: Check iOS build
+        run: |
+          if [ -z "${{ needs.get_ios_build.outputs.build_id }}" ]; then
+            echo "No iOS build found matching fingerprint and runtime version ${{ needs.parse_tag.outputs.runtime_version }}"
+            exit 1
+          fi
+          echo "iOS build found: ${{ needs.get_ios_build.outputs.build_id }}"
+
   publish_update:
     name: Publish critical update
-    needs: [get_android_build, get_ios_build, parse_tag]
-    if: ${{ needs.get_android_build.outputs.build_id && needs.get_ios_build.outputs.build_id }}
+    needs: [verify_builds, parse_tag]
     type: update
     env:
       APP_VERSION: ${{ needs.parse_tag.outputs.version }}
