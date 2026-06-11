@@ -31,6 +31,24 @@
       "ios": {
         "simulator": true
       }
+    },
+    "production-pet": {
+      "autoIncrement": true,
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_BRAND": "food-for-my-pet",
+        "APP_VERSION": "1.2.0"
+      }
+    },
+    "production-simulator-pet": {
+      "extends": "production",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_BRAND": "food-for-my-pet",
+        "APP_VERSION": "1.2.0"
+      }
     }
   },
   "submit": {
