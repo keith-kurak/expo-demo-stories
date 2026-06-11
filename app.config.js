@@ -73,6 +73,12 @@ export default ({ config }) => ({
         },
       },
     ],
+    [
+      "expo-dev-client",
+      {
+        addGeneratedScheme: isDev,
+      },
+    ],
   ],
   extra: {
     ...config.extra,
