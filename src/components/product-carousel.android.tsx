@@ -1,6 +1,8 @@
 import { Host, HorizontalMultiBrowseCarousel, RNHostView } from '@expo/ui/jetpack-compose';
 import { size } from '@expo/ui/jetpack-compose/modifiers';
-import { StyleSheet } from 'react-native';
+import { Observe } from 'expo-observe';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { ProductCard, CARD_WIDTH, CARD_HEIGHT } from './product-card';
 
@@ -16,6 +18,8 @@ type ProductCarouselProps = {
 };
 
 export function ProductCarousel({ products }: ProductCarouselProps) {
+  const router = useRouter();
+
   return (
     <Host matchContents={{ vertical: true }} style={styles.host}>
       <HorizontalMultiBrowseCarousel
@@ -24,12 +28,24 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
         flingBehavior="singleAdvance">
         {products.map(product => (
           <RNHostView key={product.id} matchContents modifiers={[size(CARD_WIDTH, CARD_HEIGHT)]}>
-            <ProductCard
-              id={product.id}
-              title={product.title}
-              description={product.description}
-              image={product.image}
-            />
+            <Pressable
+              onPress={() => {
+                Observe.logEvent('product.tapped', {
+                  attributes: { productId: product.id, title: product.title },
+                });
+                router.push({
+                  pathname: '/product/[id]',
+                  params: product,
+                });
+              }}
+              style={styles.pressable}>
+              <ProductCard
+                id={product.id}
+                title={product.title}
+                description={product.description}
+                image={product.image}
+              />
+            </Pressable>
           </RNHostView>
         ))}
       </HorizontalMultiBrowseCarousel>
@@ -40,5 +56,9 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
 const styles = StyleSheet.create({
   host: {
     width: '100%',
+  },
+  pressable: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
   },
 });

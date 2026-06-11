@@ -1,6 +1,10 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { Observe } from 'expo-observe';
+import { Link } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
-import { ProductCard } from './product-card';
+import { ProductCard, CARD_WIDTH, CARD_HEIGHT } from './product-card';
+
+import { Spacing } from '@/constants/theme';
 
 type Product = {
   id: string;
@@ -20,13 +24,26 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}>
       {products.map(product => (
-        <ProductCard
+        <Link
           key={product.id}
-          id={product.id}
-          title={product.title}
-          description={product.description}
-          image={product.image}
-        />
+          href={{
+            pathname: '/product/[id]',
+            params: product,
+          }}
+          onPress={() => {
+            Observe.logEvent('product.tapped', {
+              attributes: { productId: product.id, title: product.title },
+            });
+          }}
+          asChild>
+          <Pressable>
+            <ProductCard
+              title={product.title}
+              description={product.description}
+              image={product.image}
+            />
+          </Pressable>
+        </Link>
       ))}
     </ScrollView>
   );
