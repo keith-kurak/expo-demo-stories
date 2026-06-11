@@ -42,7 +42,7 @@ jobs:
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
       runtime_version: ${{ needs.resolve_runtime_version.outputs.runtime_version }}
-      profile: production
+      profile: production-simulator # for demonstration purposes only
 
   publish_update:
     name: Publish update
