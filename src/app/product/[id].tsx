@@ -1,13 +1,13 @@
-import { Image } from 'expo-image';
-import { Observe, useObserve } from 'expo-observe';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Image } from "expo-image";
+import { AppMetrics, useObserve } from "expo-observe";
+import { Stack, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Spacing } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function ProductDetailScreen() {
   const { markInteractive } = useObserve();
@@ -20,7 +20,7 @@ export default function ProductDetailScreen() {
   const theme = useTheme();
 
   useEffect(() => {
-    Observe.logEvent('product.viewed', {
+    AppMetrics.logEvent("product.viewed", {
       attributes: { productId: id, title },
     });
     markInteractive();
@@ -28,11 +28,15 @@ export default function ProductDetailScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: title ?? '' }} />
+      <Stack.Screen options={{ title: title ?? "" }} />
       <ScrollView style={{ backgroundColor: theme.background }}>
         <ThemedView style={styles.container}>
           {image ? (
-            <Image source={{ uri: image }} style={styles.image} contentFit="cover" />
+            <Image
+              source={{ uri: image }}
+              style={styles.image}
+              contentFit="cover"
+            />
           ) : null}
           <ThemedView style={styles.content}>
             <ThemedText type="subtitle">{title}</ThemedText>
@@ -51,7 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   image: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 4 / 3,
   },
   content: {
