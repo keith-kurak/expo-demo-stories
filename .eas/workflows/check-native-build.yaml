@@ -19,7 +19,7 @@ jobs:
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
       runtime_version: ${{ substring(github.ref_name, 8) }}
-      profile: production
+      profile: production-apk # for demonstration purposes only
 
   get_ios_build:
     name: Find iOS build

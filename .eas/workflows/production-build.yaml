@@ -13,7 +13,7 @@ jobs:
       APP_VERSION: ${{ github.ref_name }}
     params:
       platform: android
-      profile: production
+      profile: production-apk
 
   # build_ios:
   #   name: Build iOS
