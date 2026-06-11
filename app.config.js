@@ -46,6 +46,9 @@ export default ({ config }) => ({
     bundleIdentifier: isDev
       ? `${brandConfig.bundleIdentifier}.dev`
       : brandConfig.bundleIdentifier,
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     package: isDev ? `${brandConfig.package}.dev` : brandConfig.package,
