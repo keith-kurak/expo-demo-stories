@@ -26,10 +26,36 @@
       "autoIncrement": true,
       "channel": "production"
     },
+    "production-apk": {
+      "android": {
+        "distribution": "internal"
+      }
+    },
     "production-simulator": {
       "extends": "production",
       "ios": {
         "simulator": true
+      }
+    },
+    "production-apk-pet": {
+      "autoIncrement": true,
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_BRAND": "food-for-my-pet",
+        "APP_VERSION": "1.2.0"
+      },
+      "android": {
+        "distribution": "internal"
+      }
+    },
+    "production-simulator-pet": {
+      "extends": "production",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_BRAND": "food-for-my-pet",
+        "APP_VERSION": "1.2.0"
       }
     }
   },

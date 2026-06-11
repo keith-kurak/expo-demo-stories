@@ -13,7 +13,7 @@ jobs:
       APP_VERSION: ${{ github.ref_name }}
     params:
       platform: android
-      profile: production
+      profile: production-apk
 
   # build_ios:
   #   name: Build iOS
@@ -33,13 +33,15 @@ jobs:
       platform: ios
       profile: production-simulator
 
-  submit_android:
-    name: Submit Android
-    needs: [build_android]
-    type: submit
-    params:
-      build_id: ${{ needs.build_android.outputs.build_id }}
+  # demonstration - didn't configure submit
+  # submit_android:
+  #   name: Submit Android
+  #   needs: [build_android]
+  #   type: submit
+  #   params:
+  #     build_id: ${{ needs.build_android.outputs.build_id }}
 
+  # demonstration - didn't configure submit
   # submit_ios:
   #   name: Submit iOS
   #   needs: [build_ios]
