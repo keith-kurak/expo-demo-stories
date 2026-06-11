@@ -20,7 +20,9 @@
       "reactCompiler": true
     },
     "updates": {
-      "checkAutomatically": "NEVER"
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     },
     "extra": {
       "criticalIndex": 0
