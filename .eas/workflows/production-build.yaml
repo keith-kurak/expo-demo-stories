@@ -3,14 +3,14 @@ name: Production build and submit
 on:
   push:
     tags:
-      - release-*.*.0
+      - "*.*.0"
 
 jobs:
   build_android:
     name: Build Android
     type: build
     env:
-      APP_VERSION: ${{ substring(github.ref_name, 8) }}
+      APP_VERSION: ${{ github.ref_name }}
     params:
       platform: android
       profile: production
@@ -19,7 +19,7 @@ jobs:
   #   name: Build iOS
   #   type: build
   #   env:
-  #     APP_VERSION: ${{ substring(github.ref_name, 8) }}
+  #     APP_VERSION: ${{ github.ref_name }}
   #   params:
   #     platform: ios
   #     profile: production
@@ -28,7 +28,7 @@ jobs:
     name: Build iOS
     type: build
     env:
-      APP_VERSION: ${{ substring(github.ref_name, 8) }}
+      APP_VERSION: ${{ github.ref_name }}
     params:
       platform: ios
       profile: production-simulator

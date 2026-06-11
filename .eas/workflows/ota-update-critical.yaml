@@ -3,7 +3,7 @@ name: OTA critical update
 on:
   push:
     tags:
-      - release-*.*.*-critical-*
+      - "*.*.*-critical-*"
 
 jobs:
   parse_tag:
@@ -17,7 +17,7 @@ jobs:
         name: Extract version and critical index from tag
         run: |
           TAG="${{ github.ref_name }}"
-          VERSION=$(echo "$TAG" | sed 's/^release-//' | sed 's/-critical-.*$//')
+          VERSION=$(echo "$TAG" | sed 's/-critical-.*$//')
           CRITICAL_INDEX=$(echo "$TAG" | sed 's/.*-critical-//')
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)

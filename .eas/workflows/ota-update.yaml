@@ -3,15 +3,16 @@ name: OTA update
 on:
   push:
     tags:
-      - release-*.*.*
-      - "!release-*.*.0"
+      - "*.*.*"
+      - "!*.*.0"
+      - "!*-critical-*"
 
 jobs:
   fingerprint:
     name: Fingerprint
     type: fingerprint
     env:
-      APP_VERSION: ${{ substring(github.ref_name, 8) }}
+      APP_VERSION: ${{ github.ref_name }}
 
   resolve_runtime_version:
     name: Resolve runtime version
@@ -19,9 +20,9 @@ jobs:
       runtime_version: ${{ steps.compute.outputs.runtime_version }}
     steps:
       - id: compute
-        name: Derive major.minor.0 from branch name
+        name: Derive major.minor.0 from tag
         run: |
-          VERSION="${{ substring(github.ref_name, 8) }}"
+          VERSION="${{ github.ref_name }}"
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)
           set-output runtime_version "${MAJOR}.${MINOR}.0"
@@ -68,6 +69,6 @@ jobs:
     needs: [verify_builds]
     type: update
     env:
-      APP_VERSION: ${{ substring(github.ref_name, 8) }}
+      APP_VERSION: ${{ github.ref_name }}
     params:
       branch: production

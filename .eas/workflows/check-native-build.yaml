@@ -3,14 +3,14 @@ name: Check native build exists
 on:
   push:
     branches:
-      - build-*.*.0
+      - "*.*.0"
 
 jobs:
   fingerprint:
     name: Fingerprint
     type: fingerprint
     env:
-      APP_VERSION: ${{ substring(github.ref_name, 8) }}
+      APP_VERSION: ${{ github.ref_name }}
 
   get_android_build:
     name: Find Android build
@@ -18,7 +18,7 @@ jobs:
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
-      runtime_version: ${{ substring(github.ref_name, 8) }}
+      runtime_version: ${{ github.ref_name }}
       profile: production
 
   get_ios_build:
@@ -27,7 +27,7 @@ jobs:
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
-      runtime_version: ${{ substring(github.ref_name, 8) }}
+      runtime_version: ${{ github.ref_name }}
       profile: production-simulator # for demonstration purposes only
 
   verify_builds:
@@ -37,14 +37,14 @@ jobs:
       - name: Check Android build
         run: |
           if [ -z "${{ needs.get_android_build.outputs.build_id }}" ]; then
-            echo "No Android production build found matching fingerprint and runtime version ${{ substring(github.ref_name, 8) }}"
+            echo "No Android production build found matching fingerprint and runtime version ${{ github.ref_name }}"
             exit 1
           fi
           echo "Android build found: ${{ needs.get_android_build.outputs.build_id }}"
       - name: Check iOS build
         run: |
           if [ -z "${{ needs.get_ios_build.outputs.build_id }}" ]; then
-            echo "No iOS production build found matching fingerprint and runtime version ${{ substring(github.ref_name, 8) }}"
+            echo "No iOS production build found matching fingerprint and runtime version ${{ github.ref_name }}"
             exit 1
           fi
           echo "iOS build found: ${{ needs.get_ios_build.outputs.build_id }}"
