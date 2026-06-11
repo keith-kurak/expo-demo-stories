@@ -3,7 +3,7 @@ name: Check native build exists
 on:
   push:
     branches:
-      - build-*.*.0
+      - "release-*.*.0"
 
 jobs:
   fingerprint:
@@ -28,7 +28,7 @@ jobs:
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
       runtime_version: ${{ substring(github.ref_name, 8) }}
-      profile: production
+      profile: production-simulator # for demonstration purposes only
 
   verify_builds:
     name: Verify builds exist

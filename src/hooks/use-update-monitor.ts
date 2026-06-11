@@ -43,10 +43,16 @@ export type UpdateMonitorState = {
   isEmbeddedLaunch: boolean;
   /** The runtime version */
   runtimeVersion: string | undefined;
-  /** The manifest version (from the update manifest) */
-  manifestVersion: string | undefined;
+  /** The app config version (from Constants.expoConfig) */
+  appConfigVersion: string | undefined;
   /** The current critical index */
   criticalIndex: number;
+  /** Whether an update is available or pending */
+  isUpdateAvailable: boolean;
+  /** The incoming update's version */
+  incomingVersion: string | undefined;
+  /** The incoming update's critical index */
+  incomingCriticalIndex: number | undefined;
 };
 
 export function useUpdateMonitor(): UpdateMonitorState {
@@ -141,10 +147,15 @@ export function useUpdateMonitor(): UpdateMonitorState {
       .finally(() => setIsChecking(false));
   }, []);
 
-  const manifest = currentlyRunning.manifest as ExpoUpdatesManifest | undefined;
-  const manifestVersion = manifest?.extra?.expoClient?.version;
   const runtimeVersion =
     currentlyRunning.runtimeVersion || Constants.expoConfig?.runtimeVersion;
+  const appConfigVersion = Constants.expoConfig?.version;
+
+  const availableManifest = availableUpdate?.manifest as ExpoUpdatesManifest | undefined;
+  const incomingVersion = availableManifest?.extra?.expoClient?.version;
+  const incomingCriticalIndex = availableManifest
+    ? getCriticalIndex(availableManifest)
+    : undefined;
 
   return {
     pendingNonCritical,
@@ -157,7 +168,10 @@ export function useUpdateMonitor(): UpdateMonitorState {
     currentUpdateId: currentlyRunning.updateId,
     isEmbeddedLaunch: currentlyRunning.isEmbeddedLaunch,
     runtimeVersion: typeof runtimeVersion === 'string' ? runtimeVersion : undefined,
-    manifestVersion,
+    appConfigVersion,
     criticalIndex: getCriticalIndex(currentlyRunning.manifest),
+    isUpdateAvailable: isUpdateAvailable || isUpdatePending,
+    incomingVersion,
+    incomingCriticalIndex,
   };
 }

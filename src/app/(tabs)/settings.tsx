@@ -25,10 +25,13 @@ export default function SettingsScreen() {
     currentUpdateId,
     isEmbeddedLaunch,
     runtimeVersion,
-    manifestVersion,
+    appConfigVersion,
     pendingNonCritical,
     downloadingCritical,
     criticalIndex,
+    isUpdateAvailable,
+    incomingVersion,
+    incomingCriticalIndex,
   } = useUpdateMonitor();
 
   useEffect(() => {
@@ -50,7 +53,7 @@ export default function SettingsScreen() {
             </ThemedText>
             <InfoRow label="Native version" value={appVersion ?? undefined} />
             <InfoRow label="Native build" value={buildVersion ?? undefined} />
-            <InfoRow label="Manifest version" value={manifestVersion} />
+            <InfoRow label="App config version" value={appConfigVersion} />
             <InfoRow label="Runtime version" value={runtimeVersion} />
             <InfoRow label="Critical index" value={String(criticalIndex)} />
           </View>
@@ -67,10 +70,21 @@ export default function SettingsScreen() {
                 downloadingCritical
                   ? 'Downloading critical update...'
                   : pendingNonCritical
-                    ? 'Update available'
-                    : 'Up to date'
+                    ? 'Update ready to install'
+                    : isUpdateAvailable
+                      ? 'Update found'
+                      : 'Up to date'
               }
             />
+            {isUpdateAvailable && (
+              <>
+                <InfoRow label="Incoming version" value={incomingVersion} />
+                <InfoRow
+                  label="Incoming critical index"
+                  value={incomingCriticalIndex != null ? String(incomingCriticalIndex) : undefined}
+                />
+              </>
+            )}
           </View>
 
           <Pressable

@@ -3,7 +3,7 @@ name: OTA critical update
 on:
   push:
     tags:
-      - release-*.*.*-critical-*
+      - "*.*.*-critical-*"
 
 jobs:
   parse_tag:
@@ -17,7 +17,7 @@ jobs:
         name: Extract version and critical index from tag
         run: |
           TAG="${{ github.ref_name }}"
-          VERSION=$(echo "$TAG" | sed 's/^release-//' | sed 's/-critical-.*$//')
+          VERSION=$(echo "$TAG" | sed 's/-critical-.*$//')
           CRITICAL_INDEX=$(echo "$TAG" | sed 's/.*-critical-//')
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)
@@ -49,12 +49,30 @@ jobs:
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
       runtime_version: ${{ needs.parse_tag.outputs.runtime_version }}
-      profile: production
+      profile: production-simulator # for demonstration purposes only
+
+  verify_builds:
+    name: Verify builds exist
+    needs: [get_android_build, get_ios_build, parse_tag]
+    steps:
+      - name: Check Android build
+        run: |
+          if [ -z "${{ needs.get_android_build.outputs.build_id }}" ]; then
+            echo "No Android build found matching fingerprint and runtime version ${{ needs.parse_tag.outputs.runtime_version }}"
+            exit 1
+          fi
+          echo "Android build found: ${{ needs.get_android_build.outputs.build_id }}"
+      - name: Check iOS build
+        run: |
+          if [ -z "${{ needs.get_ios_build.outputs.build_id }}" ]; then
+            echo "No iOS build found matching fingerprint and runtime version ${{ needs.parse_tag.outputs.runtime_version }}"
+            exit 1
+          fi
+          echo "iOS build found: ${{ needs.get_ios_build.outputs.build_id }}"
 
   publish_update:
     name: Publish critical update
-    needs: [get_android_build, get_ios_build, parse_tag]
-    if: ${{ needs.get_android_build.outputs.build_id && needs.get_ios_build.outputs.build_id }}
+    needs: [verify_builds, parse_tag]
     type: update
     env:
       APP_VERSION: ${{ needs.parse_tag.outputs.version }}
