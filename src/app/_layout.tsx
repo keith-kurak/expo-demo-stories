@@ -8,6 +8,7 @@ import { useUpdateMonitor } from "@/hooks/use-update-monitor";
 
 Observe.configure({
   integrations: { "expo-router": true },
+  dispatchInDebug: true,
 });
 
 function RootLayout() {
