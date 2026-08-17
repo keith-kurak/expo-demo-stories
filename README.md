@@ -6,7 +6,7 @@ Some small stories from the field about using various parts of EAS
 
 ### 1. EAS Workflows / Release branch automation / release to multiple versions
 
-Let's suppose that we do trunk-based development and we release based on tagging commits. We'll tag releases in the format "release-1.2.0".
+Let's suppose that we do trunk-based development and we release based on tagging commits. We'll tag releases in the format "1.2.0".
 
 To semantically differentiate native builds from updates, we'll use patch version:
 
@@ -17,17 +17,17 @@ Thus, our runtime version will be x.y.0. An update must only change the patch nu
 
 #### On binary/store release
 
-1. tag `release-x.y.0`
-2. **production-build.yaml** workflow will run, creating/submitting builds to stores
-3. create `build-x.y.0` branch, this will be the workspace for cherry-picking commits for future updates
+1. Create the `release-x.y.0` branch. This is the workspace for cherry-picking commits for future updates.
+2. Tag `x.y.0`
+3. **production-build.yaml** workflow will run, creating/submitting builds to stores
 
 #### On update
 
-1. Cherry pick desired commits to `build-x.y.0` branch
+1. Cherry pick desired commits to the `release-x.y.0` branch
 2. **check-native-build.yaml** will run, confirm that new JS is still runtime-compatible
-3. Tag `release-x.y.1` (or higher)
+3. Tag `x.y.1` (or higher)
 4. **ota-update.yaml** will run, publishing OTA update (after one more runtime check)
-5. Repeat for any other builds that should be updated.
+5. Repeat for any other release branches that should be updated.
 
 ### 2. Normal vs critical updates
 
@@ -35,8 +35,8 @@ _The critical updates pattern is shown in this example: https://github.com/expo/
 
 We'll use a critical index to indicate if there is at least one critical update between the current update the user is running and the next update. Then we'll change the client side behavior to force the update immediately when the update is critical.
 
-1. On the `build-x.y.0` branch where you're cherry-picking updates, increment the critical index.
-2. Tag `release.x.y.z` to trigger **ota-update.yaml**
+1. On the `release-x.y.0` branch where you're cherry-picking updates, increment the critical index.
+2. Tag `x.y.z` to trigger **ota-update.yaml**
 3. The published update will be critical.
 
 #### 3. Updating multiple apps at once
