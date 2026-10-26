@@ -1,6 +1,6 @@
 import { Host, HorizontalMultiBrowseCarousel, RNHostView } from '@expo/ui/jetpack-compose';
 import { size } from '@expo/ui/jetpack-compose/modifiers';
-import { AppMetrics } from 'expo-observe';
+import { Observe } from 'expo-observe';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 
@@ -21,7 +21,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
   const router = useRouter();
 
   const handlePress = (product: Product) => {
-    AppMetrics.logEvent('product.tapped', {
+    Observe.logEvent('product.tapped', {
       attributes: { productId: product.id, title: product.title },
     });
     router.push({

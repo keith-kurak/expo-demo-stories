@@ -1,4 +1,4 @@
-import { AppMetrics } from "expo-observe";
+import { Observe } from "expo-observe";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 
@@ -31,7 +31,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
             params: product,
           }}
           onPress={() => {
-            AppMetrics.logEvent("product.tapped", {
+            Observe.logEvent("product.tapped", {
               attributes: { productId: product.id, title: product.title },
             });
           }}

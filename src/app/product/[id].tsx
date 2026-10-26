@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { AppMetrics, useObserve } from "expo-observe";
+import { Observe, useObserve } from "expo-observe";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { ScrollView, StyleSheet } from "react-native";
@@ -20,7 +20,7 @@ export default function ProductDetailScreen() {
   const theme = useTheme();
 
   useEffect(() => {
-    AppMetrics.logEvent("product.viewed", {
+    Observe.logEvent("product.viewed", {
       attributes: { productId: id, title },
     });
     markInteractive();
